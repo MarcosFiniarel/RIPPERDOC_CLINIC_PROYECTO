@@ -6,4 +6,5 @@ import com.ccs.cyber_ciberware_service.Model.Ciberware;
 
 @Repository
 public interface CiberwareRepository extends JpaRepository<Ciberware,Long>{
+    boolean existsByNombre(String nombre);
 }

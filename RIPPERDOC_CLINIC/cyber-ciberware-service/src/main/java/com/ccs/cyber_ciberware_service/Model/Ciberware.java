@@ -16,6 +16,7 @@ public class Ciberware {
     private Long id;
 
     @NotBlank(message = "El nombre del ciberware es obligatorio")
+    @Column(unique = true)
     private String nombre;
 
     @NotNull(message = "El costo en Eddies es obligatorio")
