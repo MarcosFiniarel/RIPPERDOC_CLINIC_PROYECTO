@@ -6,4 +6,5 @@ import com.cps.cyber_patient_service.Model.Paciente;
 
 @Repository
 public interface PacienteRepository extends JpaRepository<Paciente,Long>{
+    boolean existsByAlias(String alias);
 }
