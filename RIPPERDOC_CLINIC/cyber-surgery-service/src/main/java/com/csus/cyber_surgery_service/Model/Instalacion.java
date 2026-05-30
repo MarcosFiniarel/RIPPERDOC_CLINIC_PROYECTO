@@ -24,6 +24,7 @@ public class Instalacion {
     @NotNull(message = "El ID del ciberware es obligatorio")
     private Long ciberwareId; // Referencia lógica al cyber-ciberware-service
 
-    @NotBlank(message = "El estado de la cirugía es obligatorio")
-    private String estadoCirugia = "EXITOSA"; // "EXITOSA", "RECHAZO_DE_TEJIDO"
+    @NotNull(message = "El impacto de humanidad es obligatorio")
+    @Min(value = 0, message = "El impacto no puede ser negativo")
+    private Integer impactoHumanidad; // Se trae como DTO del cyber-ciberware-service
 }
