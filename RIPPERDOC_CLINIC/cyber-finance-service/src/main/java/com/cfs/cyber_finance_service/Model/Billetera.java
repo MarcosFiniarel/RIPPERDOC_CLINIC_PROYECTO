@@ -21,5 +21,5 @@ public class Billetera {
 
     @NotNull(message = "El saldo no puede ser nulo")
     @Min(value = 0, message = "No puedes tener saldo negativo")
-    private Double saldoEddies;
+    private Double saldoEddies = 0.0;
 }
