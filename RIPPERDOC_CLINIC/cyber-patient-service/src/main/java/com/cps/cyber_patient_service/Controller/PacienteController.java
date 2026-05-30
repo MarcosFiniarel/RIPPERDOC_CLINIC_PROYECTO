@@ -1,5 +1,6 @@
 package com.cps.cyber_patient_service.Controller;
 
+import com.cps.cyber_patient_service.DTO.PacienteContratoDto;
 import com.cps.cyber_patient_service.Model.Paciente;
 import com.cps.cyber_patient_service.Service.PacienteService;
 import lombok.RequiredArgsConstructor;
@@ -90,5 +91,27 @@ public class PacienteController {
         Paciente actualizado = pacienteService.actualizacionCyberpsicosis(id, modificador);
         log.info("Nivel de Cyberpsicosis actualizado con éxito. Nivel actual para '{}': {}", actualizado.getAlias(), actualizado.getNivelCyberpsicosis());
         return ResponseEntity.ok(actualizado);
+    }
+
+    // ENDPOINT DE INTEGRACIÓN: CONTRATO GLOBAL PARA EL FLUJO DE VENTAS
+    /**
+     * 8. EMITIR CONTRATO GLOBAL DE COMPRA
+     * Metodo HTTP: GET
+     * Endpoint: http://localhost:8081/api/v1/paciente/{id}/contrato
+     * Retorna un DTO optimizado (ID, ALIAS).
+     */
+    @GetMapping("/{id}/contrato")
+    public ResponseEntity<PacienteContratoDto> obtenerContratoParaVenta(@PathVariable Long id) {
+        log.info("Emitiendo Contrato Global para compra de ID: {}", id);
+        Paciente paciente = pacienteService.obtenerPorId(id);
+
+        // Se empaquetan los datos de la entidad de la BD hacia el DTO de transferencia de red
+        PacienteContratoDto contrato = new PacienteContratoDto(
+                paciente.getId(),
+                paciente.getAlias()
+        );
+
+        log.info("Contrato Global de '{}' generado con éxito. Enviando a Ventas...", contrato.getAliasPaciente());
+        return ResponseEntity.ok(contrato);
     }
 }
