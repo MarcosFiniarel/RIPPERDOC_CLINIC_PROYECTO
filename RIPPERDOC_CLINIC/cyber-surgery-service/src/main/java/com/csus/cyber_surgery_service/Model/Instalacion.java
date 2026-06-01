@@ -27,4 +27,7 @@ public class Instalacion {
     @NotNull(message = "El impacto de humanidad es obligatorio")
     @Min(value = 0, message = "El impacto no puede ser negativo")
     private Integer impactoHumanidad; // Se trae como DTO del cyber-ciberware-service
+
+    @NotBlank(message = "El estado no puede estar vacio")
+    private String estado = "EN PROCESO"; // "EN PROCESO" estado por default, y "EXITOSA" unico cambio actual de estado
 }
