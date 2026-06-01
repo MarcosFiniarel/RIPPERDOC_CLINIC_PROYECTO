@@ -95,7 +95,7 @@ public class PacienteController {
 
     // ENDPOINT DE INTEGRACIÓN: CONTRATO GLOBAL PARA EL FLUJO DE VENTAS
     /**
-     * 8. EMITIR CONTRATO GLOBAL DE COMPRA
+     * EMITIR CONTRATO GLOBAL DE COMPRA
      * Metodo HTTP: GET
      * Endpoint: http://localhost:8081/api/v1/paciente/{id}/contrato
      * Retorna un DTO optimizado (ID, ALIAS).

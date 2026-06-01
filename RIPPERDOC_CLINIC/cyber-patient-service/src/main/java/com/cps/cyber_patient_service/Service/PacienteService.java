@@ -48,16 +48,22 @@ public class PacienteService {
         pacienteRepository.delete(paciente);
     }
 
-    // ACTUALIZACION DE CYBERPSICOSIS (Metodo pensado para ser usado por servicio de humanidad)
+    // ACTUALIZACION DE CYBERPSICOSIS (Metodo pensado para ser usado por servicio de cirugia)
     @Transactional
     public Paciente actualizacionCyberpsicosis(Long id, int modificador) {
         Paciente paciente = obtenerPorId(id);
 
         // Calculamos la suma al nivel de psicosis
         int NvlCyberpsico = paciente.getNivelCyberpsicosis() + modificador;
-
         // Aplicamos la actualizacion de nivel
         paciente.setNivelCyberpsicosis(NvlCyberpsico);
-        return pacienteRepository.save(paciente);
+        Paciente pacienteActualizado = pacienteRepository.saveAndFlush(paciente);
+
+        // Verificacion del nivel de Cyberpsicosis
+        if(NvlCyberpsico >= 100){
+            // Aqui se llama a maxtac (Comunicacion con su microservicio)
+        }
+
+        return pacienteActualizado;
     }
 }
