@@ -48,6 +48,13 @@ public class PacienteService {
         pacienteRepository.delete(paciente);
     }
 
+    // CHEQUEO DE PACIENTE APTO
+    @Transactional
+    public boolean checkPaciente(Long id){
+        Paciente paciente = obtenerPorId(id);
+        return paciente.getNivelCyberpsicosis() < 100;
+    }
+
     // ACTUALIZACION DE CYBERPSICOSIS (Metodo pensado para ser usado por servicio de cirugia)
     @Transactional
     public Paciente actualizacionCyberpsicosis(Long id, int modificador) {

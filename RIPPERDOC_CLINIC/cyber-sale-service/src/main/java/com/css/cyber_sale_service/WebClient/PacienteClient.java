@@ -1,5 +1,6 @@
 package com.css.cyber_sale_service.WebClient;
 
+import com.css.cyber_sale_service.DTO.CiberwareContratoDto;
 import com.css.cyber_sale_service.DTO.PacienteContratoDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,31 +22,46 @@ public class PacienteClient {
                 .build();
     }
 
-    /**
-     * Verifica la existencia del Edgerunner y obtiene su DTO en un solo viaje de red.
-     * Si no existe, dispara un error que atajará el GlobalExceptionHandler.
-     */
-    public PacienteContratoDto verificarYObtenerPaciente(Long id) {
-        log.info("[RED -> PACIENTES] Validando existencia y solicitando contrato del ID: {}", id);
+    // Chequea disponibilidad técnica de stock
+    private boolean verificarDisponibilidad(Long id) {
+        log.info("[RED -> PACIENTES] Verificando habilitacion para ID: {}", id);
+
+        Boolean disponible = this.webClient.get()
+                .uri("/" + id + "/check")
+                .retrieve()
+                // Si el catálogo responde 404 (No existe), manejamos el error devolviendo false en el flujo
+                .onStatus(HttpStatus.NOT_FOUND::equals, response -> Mono.empty())
+                .bodyToMono(Boolean.class)
+                // Si la red se cae por completo, devolvemos false por seguridad
+                .onErrorReturn(false)
+                .block();
+
+        return disponible != null && disponible;
+    }
+
+    // Orquesta la verificación y la extracción del DTO
+    public PacienteContratoDto obtenerContratoSiEstaDisponible(Long id) {
+        // 1. Ejecutamos la verificación anidada
+        boolean aptoParaCompra = verificarDisponibilidad(id);
+
+        if (!aptoParaCompra) {
+            log.warn("[RED -> PACIENTES] El paciente ID: {} NO está habilitado (Sobrepasa su capacidad de asimilacion)", id);
+            // Lanzamos una excepción de Spring.
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "El paciente no esta habilitado para comprar. Verifica el su nivel de humanidad.");
+        }
+
+        // 2. Si dio true, procedemos a traer el DTO completo
+        log.info("[RED -> PACIENTE] Disponibilidad confirmada. Extrayendo contrato para ID: {}", id);
 
         return this.webClient.get()
-                .uri("/" + id)
+                .uri("/" + id + "/contrato")
                 .retrieve()
-                // interceptamos el 404 del microservicio de Pacientes para dar un mensaje personalizado
-                .onStatus(HttpStatus.NOT_FOUND::equals, response ->
-                        Mono.error(new ResponseStatusException(
-                                HttpStatus.NOT_FOUND,
-                                "El Edgerunner con ID " + id + " no existe en los registros de la clínica. Venta abortada.")))
                 .bodyToMono(PacienteContratoDto.class)
-                // Si el microservicio de pacientes está totalmente caído (500, Connection Refused, etc.)
-                .onErrorResume(error -> {
-                    if (error instanceof ResponseStatusException) {
-                        return Mono.error(error); // Pasamos el 404 que ya manejamos arriba
-                    }
-                    return Mono.error(new ResponseStatusException(
-                            HttpStatus.INTERNAL_SERVER_ERROR,
-                            "Error crítico en la red al conectar con el servicio de Pacientes."));
-                })
-                .block(); // Sincrónico para congelar la transacción de venta hasta estar seguros
+                // Si por alguna razón falla aquí, lanzamos un error controlado
+                .onErrorResume(error -> Mono.error(new ResponseStatusException(
+                        HttpStatus.INTERNAL_SERVER_ERROR, "Error crítico al recuperar el contrato del ciberware.")))
+                .block();
     }
 }

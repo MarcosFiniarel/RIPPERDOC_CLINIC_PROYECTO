@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PacienteContratoDto {
-    private Long id;
-    private String alias;
+    private Long idPaciente;
+    private String AliasPaciente;
 }
