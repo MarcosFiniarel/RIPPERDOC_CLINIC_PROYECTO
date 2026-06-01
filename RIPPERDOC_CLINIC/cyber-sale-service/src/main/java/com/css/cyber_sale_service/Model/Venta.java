@@ -18,8 +18,14 @@ public class Venta {
     @NotNull(message = "El ID del paciente es obligatorio")
     private Long pacienteId; // Referencia lógica al cyber-patient-service
 
+    @NotBlank(message = "El Alias no puede estar en blanco")
+    private String aliasPaciente;
+
     @NotNull(message = "El ID del ciberware es obligatorio")
     private Long ciberwareId; // Referencia lógica al cyber-ciberware-service
+
+    @NotBlank(message = "El nombre del ciberware no puede estar en blanco")
+    private String nombreCiberware;
 
     @NotNull(message = "El precio cobrado es obligatorio")
     @Positive(message = "El precio debe ser positivo")
