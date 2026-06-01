@@ -6,4 +6,6 @@ import com.css.cyber_sale_service.Model.Venta;
 
 @Repository
 public interface VentaRepository extends JpaRepository<Venta,Long>{
+    java.util.List<Venta> findByPacienteId(Long pacienteId);
+    java.util.List<Venta> findByCiberwareId(Long ciberwareId);
 }
