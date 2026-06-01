@@ -69,15 +69,15 @@ public class VentaService {
         log.info("=== Iniciando orquestación de venta con validación financiera inmediata ===");
 
         // PASO A: Validar Paciente y traer DTO (Viaje único de red para optimizar recursos)
-        PacienteContratoDto paciente = pacienteClient.verificarYObtenerPaciente(request.getIdPaciente());
+        PacienteContratoDto paciente = pacienteClient.obtenerContratoSiEstaDisponible(request.getIdPaciente());
 
         // PASO B: Validar existencia, disponibilidad de stock y traer DTO del ciberware anidado
         CiberwareContratoDto ciberware = ciberwareClient.obtenerContratoSiEstaDisponible(request.getIdCiberware());
 
         // PASO C: Construir entidad base histórica en memoria (Nace en PENDIENTE por seguridad)
         Venta venta = new Venta();
-        venta.setPacienteId(paciente.getId());
-        venta.setAliasPaciente(paciente.getAlias());
+        venta.setPacienteId(paciente.getIdPaciente());
+        venta.setAliasPaciente(paciente.getAliasPaciente());
         venta.setCiberwareId(ciberware.getId());
         venta.setNombreCiberware(ciberware.getNombre());
         venta.setPrecioCobrado(ciberware.getCostoEddies());

@@ -56,7 +56,7 @@ public class CiberwareClient {
         log.info("[RED -> CATÁLOGO] Disponibilidad confirmada. Extrayendo contrato para ID: {}", id);
 
         return this.webClient.get()
-                .uri("/" + id)
+                .uri("/" + id + "/contrato")
                 .retrieve()
                 .bodyToMono(CiberwareContratoDto.class)
                 // Si por alguna razón falla aquí, lanzamos un error controlado

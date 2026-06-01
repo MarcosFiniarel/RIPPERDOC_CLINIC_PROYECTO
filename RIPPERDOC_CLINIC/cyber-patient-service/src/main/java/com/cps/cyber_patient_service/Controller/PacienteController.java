@@ -94,6 +94,19 @@ public class PacienteController {
     }
 
     // ENDPOINT DE INTEGRACIÓN: CONTRATO GLOBAL PARA EL FLUJO DE VENTAS
+    /** VALIDAR QUE EL PACIENTE ESTA APTO PARA COMPRAR CIBERWARE
+     * Metodo HTTP: GET
+     * Endpoint: http://localhost:8081/api/v1/paciente/{id}/check
+     * Retorna true si el paciente puede comprar y false si no
+     */
+    @GetMapping("/{id}/check")
+    public ResponseEntity<Boolean> checkPaciente(@PathVariable Long id) {
+        log.info("Verificando paciente con ID: {}", id);
+        boolean disponible = pacienteService.checkPaciente(id);
+        log.info("Verificación completada. ¿Habilitado para comprar?: {}", disponible);
+        return ResponseEntity.ok(disponible);
+    }
+
     /**
      * EMITIR CONTRATO GLOBAL DE COMPRA
      * Metodo HTTP: GET
