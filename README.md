@@ -15,12 +15,12 @@ El ecosistema opera bajo una regla de negocio estricta: **transacciones individu
 3. **Contrato:** Se genera una venta en estado *Pendiente*.
 4. **Cobro:** El servicio de finanzas valida los fondos (Eddies) y procesa la transacción.
 5. **Cirugía:** Si hay pago, el cirujano opera e instala físicamente la pieza en el paciente.
-6. **Impacto Psicológico:** El servicio de humanidad calcula el desgaste mental acumulado por el metal implantado.
+6. **Impacto Psicológico:** Tras la cirugía se actualiza el desgaste mental del paciente acumulado por el metal implantado.
 7. **Código Negro:** Si el paciente supera el límite de cordura, se dispara una alerta automática y MaxTac entra en acción.
 
 ---
 
-## Los 7 Microservicios Core
+## Los 6 Microservicios Core
 
 Cada módulo funciona como una entidad aislada que emula restricciones de llaves foráneas (`Foreign Keys`) mediante validaciones lógicas por red a través de peticiones HTTP:
 
@@ -29,8 +29,7 @@ Cada módulo funciona como una entidad aislada que emula restricciones de llaves
 * **3. cyber-sale-service (Ventas):** El núcleo transaccional. Conecta al paciente con el implante mediante registros planos y gestiona el estado de la compraventa.
 * **4. cyber-finance-service (Finanzas):** Controla las billeteras digitales de los pacientes y audita cada transacción financiera en eurodólares (Eddies).
 * **5. cyber-surgery-service (Quirófano):** Registra el éxito o fallo de la implantación física en la camilla de operaciones tras confirmarse el pago.
-* **6. cyber-humanity-service (Monitoreo de Humanidad):** El escáner neuronal que mide el historial de modificaciones del paciente y calcula el impacto psicológico post-cirugía.
-* **7. cyber-maxtac-service (Alertas de Seguridad):** El protocolo de emergencia. Monitorea brotes psicóticos para desplegar las fuerzas de choque si un paciente se sale de control.
+* **6. cyber-maxtac-service (Alertas de Seguridad):** El protocolo de emergencia. Monitorea brotes psicóticos para desplegar las fuerzas de choque si un paciente se sale de control.
 
 ---
 
