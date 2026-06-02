@@ -30,4 +30,27 @@ public class Ciberware {
     @NotNull(message = "El stock es obligatorio")
     @Min(value = 0, message = "El stock no puede ser negativo")
     private Integer stock;
+
+    // DATOS DE COMPATIBILIDAD DEL CIBERWARE
+
+    @NotBlank(message = "La altura no puede estar en blanco.")
+    private String alturaCompatibilidad; // ALTO, MEDIO, BAJO
+
+    @NotBlank(message = "La densidad osea no puede estar en blanco.")
+    private String densidadOseaCompatibilidad; // ALTA, MEDIA, BAJA
+
+    @NotBlank(message = "La densidad muscular no puede estar en blanco.")
+    private String densidadMuscularCompatibilidad; // ALTA, MEDIA, BAJA
+
+    @NotNull(message = "La peso minimo no puede estar en blanco.")
+    private Double pesoMinimoCompatibilidad;
+
+    @NotNull(message = "La peso maximo no puede estar en blanco.")
+    private Double pesoMaximoCompatibilidad;
+
+    @NotNull(message = "La edad no puede estar en blanco.")
+    private Integer edadMinimaCompatibilidad;
+
+    @NotNull(message = "La edad no puede estar en blanco.")
+    private Integer edadMaximaCompatibilidad;
 }

@@ -24,4 +24,21 @@ public class Paciente {
     @NotNull(message = "El nivel de cyberpsicosis no puede ser nulo")
     @Min(value = 0, message = "El nivel mínimo es 0%")
     private Integer nivelCyberpsicosis = 0;
+
+    // ATRIBUTOS PARA COMPATIBILIDAD
+
+    @NotBlank(message = "La altura no puede estar en blanco.")
+    private String altura; // ALTO, MEDIO, BAJO
+
+    @NotBlank(message = "La densidad osea no puede estar en blanco.")
+    private String densidadOsea; // ALTA, MEDIA, BAJA
+
+    @NotBlank(message = "La densidad muscular no puede estar en blanco.")
+    private String densidadMuscular; // ALTA, MEDIA, BAJA
+
+    @NotNull(message = "La peso no puede estar en blanco.")
+    private Double peso;
+
+    @NotNull(message = "La edad no puede estar en blanco.")
+    private Integer edad;
 }

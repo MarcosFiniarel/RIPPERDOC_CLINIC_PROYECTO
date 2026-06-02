@@ -1,5 +1,6 @@
 package com.ccs.cyber_ciberware_service.Controller;
 
+import com.ccs.cyber_ciberware_service.DTO.CiberwareCompatibilidadDto;
 import com.ccs.cyber_ciberware_service.DTO.CiberwareContratoDto;
 import com.ccs.cyber_ciberware_service.Model.Ciberware;
 import com.ccs.cyber_ciberware_service.Service.CiberwareService;
@@ -127,7 +128,7 @@ public class CiberwareController {
      * Metodo HTTP: GET
      * Endpoint: http://localhost:8082/api/v1/ciberware/{id}/contrato
      * Retorna un DTO optimizado (ID, Nombre, Costo Eddies, Costo Humanidad).
-     * Evita que otros microservicios (como Finanzas o Humanidad) tengan que llamar redundantemente al Catalogo.
+     * Evita que otros microservicios (como Finanzas) tengan que llamar redundantemente al Catalogo.
      */
     @GetMapping("/{id}/contrato")
     public ResponseEntity<CiberwareContratoDto> obtenerContratoParaVenta(@PathVariable Long id) {
@@ -144,5 +145,32 @@ public class CiberwareController {
 
         log.info("Contrato Global generado con éxito para '{}'. Enviando a Ventas...", contrato.getNombre());
         return ResponseEntity.ok(contrato);
+    }
+
+    /**
+     * 9. EMITIR DATOS DE COMPATIBILIDAD
+     * Metodo HTTP: GET
+     * Endpoint: http://localhost:8082/api/v1/ciberware/{id}/compatibilidad
+     * Retorna un DTO optimizado (ALTURA, DENSIDAD OSEA, DENSIDAD MUSCULAR, PESO Y EDAD).
+     * Evita que otros microservicios (como Finanzas o Humanidad) tengan que llamar redundantemente al Catalogo.
+     */
+    @GetMapping("/{id}/compatibilidad")
+    public ResponseEntity<CiberwareCompatibilidadDto> obtenerCompatibilidad(@PathVariable Long id) {
+        log.info("Emitiendo datos de compatibilidad para ciberware ID: {}", id);
+        Ciberware ciberware = ciberwareService.obtenerPorId(id);
+
+        // Se empaquetan los datos de la entidad de la BD hacia el DTO de transferencia de red
+        CiberwareCompatibilidadDto compatibilidad = new CiberwareCompatibilidadDto(
+                ciberware.getAlturaCompatibilidad(),
+                ciberware.getDensidadOseaCompatibilidad(),
+                ciberware.getDensidadMuscularCompatibilidad(),
+                ciberware.getPesoMinimoCompatibilidad(),
+                ciberware.getPesoMaximoCompatibilidad(),
+                ciberware.getEdadMinimaCompatibilidad(),
+                ciberware.getEdadMaximaCompatibilidad()
+        );
+
+        log.info("Datos de compatibilidad obtenidos con éxito para '{}'. Enviando a Compatibilidad...", ciberware.getNombre());
+        return ResponseEntity.ok(compatibilidad);
     }
 }
