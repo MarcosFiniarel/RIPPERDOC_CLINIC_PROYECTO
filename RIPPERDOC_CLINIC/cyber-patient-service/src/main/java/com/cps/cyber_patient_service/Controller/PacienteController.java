@@ -1,5 +1,6 @@
 package com.cps.cyber_patient_service.Controller;
 
+import com.cps.cyber_patient_service.DTO.PacienteCompatibilidadDto;
 import com.cps.cyber_patient_service.DTO.PacienteContratoDto;
 import com.cps.cyber_patient_service.Model.Paciente;
 import com.cps.cyber_patient_service.Service.PacienteService;
@@ -126,5 +127,29 @@ public class PacienteController {
 
         log.info("Contrato Global de '{}' generado con éxito. Enviando a Ventas...", contrato.getAliasPaciente());
         return ResponseEntity.ok(contrato);
+    }
+
+    /**
+     * EMITIR DATOS DE COMPATIBILIDAD
+     * Metodo HTTP: GET
+     * Endpoint: http://localhost:8081/api/v1/paciente/{id}/compatibilidad
+     * Retorna un DTO optimizado (ALTURA, DENSIDAD OSEA, DENSIDAD MUSCULAR, PESO y EDAD).
+     */
+    @GetMapping("/{id}/compatibilidad")
+    public ResponseEntity<PacienteCompatibilidadDto> obtenerCompatibilidad(@PathVariable Long id) {
+        log.info("Emitiendo datos de compatibilidad de ID: {}", id);
+        Paciente paciente = pacienteService.obtenerPorId(id);
+
+        // Se empaquetan los datos de la entidad de la BD hacia el DTO de transferencia de red
+        PacienteCompatibilidadDto compatibilidad = new PacienteCompatibilidadDto(
+                paciente.getAltura(),
+                paciente.getDensidadOsea(),
+                paciente.getDensidadMuscular(),
+                paciente.getPeso(),
+                paciente.getEdad()
+        );
+
+        log.info("Datos de '{}' obtenidos con éxito. Enviando a Compatibilidad...", paciente.getAlias());
+        return ResponseEntity.ok(compatibilidad);
     }
 }
