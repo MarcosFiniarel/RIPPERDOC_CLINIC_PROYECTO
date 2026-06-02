@@ -64,7 +64,7 @@ public class VentaService {
      * Recibe los IDs de Postman, valida contra Paciente y Ciberware en tiempo real,
      * guarda la orden previa y dispara el flujo de validación financiera local inmutable.
      */
-    @Transactional
+    @Transactional(noRollbackFor = ResponseStatusException.class)
     public Venta crearVenta(RequestDto request) {
         log.info("=== Iniciando orquestación de venta con validación financiera inmediata ===");
 

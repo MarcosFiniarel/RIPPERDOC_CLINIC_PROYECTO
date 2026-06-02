@@ -3,6 +3,7 @@ package com.csus.cyber_surgery_service.Service;
 import com.csus.cyber_surgery_service.DTO.CirugiaRequestDto;
 import com.csus.cyber_surgery_service.Model.Instalacion;
 import com.csus.cyber_surgery_service.Repository.InstalacionRepository;
+import com.csus.cyber_surgery_service.WebClient.CompatibilidadClient;
 import com.csus.cyber_surgery_service.WebClient.PacienteClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,13 +21,14 @@ public class InstalacionService {
 
     private final InstalacionRepository instalacionRepository;
     private final PacienteClient  pacienteClient;
+    private final CompatibilidadClient compatibilidadClient;
 
     /**
      * 1. CREAR UNA CIRUGÍA (ORQUESTADOR DE QUIRÓFANO)
      * Recibe el DTO enviado por Ventas, ensambla la entidad local en "EN PROCESO",
      * asegura el registro en la BD y gatilla la evaluación médica inmediata.
      */
-    @Transactional
+    @Transactional(noRollbackFor = ResponseStatusException.class)
     public Instalacion crearCirugia(CirugiaRequestDto dto) {
         log.info("=== Quirófano: Desempaquetando DTO de Ventas para Paciente ID: {} ===", dto.getPacienteId());
 
@@ -46,7 +48,11 @@ public class InstalacionService {
                 cirugiaRegistrada.getId(), cirugiaRegistrada.getEstado());
 
         // PASO 6 SIMULADO: Evaluamos y mutamos el estado de manera síncrona e inmediata
-        boolean estadoIntervencion = true;
+        boolean estadoIntervencion = compatibilidadClient.verificarCompatibilidadBiologica(
+                cirugiaRegistrada.getId(),
+                cirugiaRegistrada.getPacienteId(),
+                cirugiaRegistrada.getCiberwareId()
+        );
 
         return procesarResultadoCirugia(cirugiaRegistrada, estadoIntervencion);
     }
