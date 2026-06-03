@@ -6,7 +6,7 @@ El objetivo principal es demostrar el diseño, aislamiento y comunicación de da
 
 ---
 
-##El Flujo del Paciente (Lógica del Proyecto)
+## El Flujo del Paciente (Lógica del Proyecto)
 El ecosistema opera bajo una regla de negocio estricta: transacciones individuales (un ítem por registro). El flujo de datos simula el recorrido real de un Edgerunner en la clínica:
 
 1. Registro: El paciente entra a la clínica con un nivel de estabilidad mental.
@@ -18,7 +18,7 @@ El ecosistema opera bajo una regla de negocio estricta: transacciones individual
 7. Impacto Psicológico: Tras una cirugía exitosa, se actualiza el desgaste mental del paciente acumulado por el metal implantado en su cuerpo.
 8. Código Negro: Si el paciente supera el límite de cordura, se dispara una alerta automática y MaxTac entra en acción.
 
-##Los 7 Microservicios Core
+## Los 7 Microservicios Core
 Cada módulo funciona como una entidad aislada que emula restricciones de llaves foráneas (Foreign Keys) mediante validaciones lógicas por red a través de peticiones HTTP síncronas (WebClient):
 
 1. cyber-patient-service (Pacientes): Administra la identidad de los Edgerunners, su estado físico-biológico, su salud mental y su nivel de degradación en la clínica.
