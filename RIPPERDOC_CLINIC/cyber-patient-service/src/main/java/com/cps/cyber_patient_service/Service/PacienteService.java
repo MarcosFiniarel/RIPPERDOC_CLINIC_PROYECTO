@@ -2,6 +2,7 @@ package com.cps.cyber_patient_service.Service;
 
 import com.cps.cyber_patient_service.Model.Paciente;
 import com.cps.cyber_patient_service.Repository.PacienteRepository;
+import com.cps.cyber_patient_service.WebClient.BilleteraClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PacienteService {
     private final PacienteRepository pacienteRepository;
+    private final BilleteraClient billeteraClient;
 
     // 1. OBTENER TODOS los pacientes
     @Transactional(readOnly = true)
@@ -38,7 +40,13 @@ public class PacienteService {
                     HttpStatus.BAD_REQUEST,
                     paciente.getAlias() + " ya está registrado.");
         }
-        return pacienteRepository.save(paciente);
+
+        Paciente pacienteNuevo = pacienteRepository.saveAndFlush(paciente);
+
+        // Asignar billetera al cliente
+        billeteraClient.crearBilleteraDigital(paciente.getId());
+
+        return pacienteNuevo;
     }
 
     // 4. ELIMINAR un registro base

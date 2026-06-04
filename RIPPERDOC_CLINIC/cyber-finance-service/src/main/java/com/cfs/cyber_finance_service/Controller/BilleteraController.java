@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/billeteras")
+@RequestMapping("/api/v1/billeteras")
 @RequiredArgsConstructor
 public class BilleteraController {
     private final BilleteraService billeteraService;
