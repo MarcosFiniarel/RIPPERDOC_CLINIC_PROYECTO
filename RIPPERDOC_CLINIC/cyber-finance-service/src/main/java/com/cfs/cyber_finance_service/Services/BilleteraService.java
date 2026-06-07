@@ -73,18 +73,16 @@ public class BilleteraService {
     // DESCUENTA SIEMPRE QUE HAYA SALDO SUFICIENTE
     // NUNCA PERMITE QUE EL SALDO QUEDE EN NEGATIVO
     @Transactional
-    public Billetera restarSaldo(Long id, double monto){
+    public Boolean restarSaldo(Long id, double monto){
         Billetera billetera = obtenerPorId(id);
         if(monto > billetera.getSaldoEddies()){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "Saldo Insuficiente");
-        };
-        billetera.setSaldoEddies(
-                billetera.getSaldoEddies() - monto
-        );
+            log.warn("Intento de cobro fallido en Billetera ID {}: Saldo Insuficiente", id);
+            return false;
+        }
+        billetera.setSaldoEddies(billetera.getSaldoEddies() - monto);
         log.info("Saldo descontado: {} Eddies", monto);
-
-        return billeteraRepository.save(billetera);
+        billeteraRepository.saveAndFlush(billetera);
+        return true;
     }
 
     //ELIMINAR BILLETERA POR ID
