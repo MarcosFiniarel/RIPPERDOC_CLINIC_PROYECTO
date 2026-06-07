@@ -9,6 +9,7 @@ import com.css.cyber_sale_service.DTO.PacienteContratoDto;
 import com.css.cyber_sale_service.DTO.RequestDto;
 import com.css.cyber_sale_service.Model.Venta;
 import com.css.cyber_sale_service.Repository.VentaRepository;
+import com.css.cyber_sale_service.WebClient.TransaccionClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -27,6 +28,7 @@ public class VentaService {
     private final CiberwareClient ciberwareClient;
     private final PacienteClient pacienteClient;
     private final InstalacionClient instalacionClient;
+    private final TransaccionClient transaccionClient;
     // private final TransaccionClient transaccionClient; // Se inyectará en esta sección al conectar con la Wallet
 
     // 1. LISTAR TODAS LAS VENTAS
@@ -92,9 +94,8 @@ public class VentaService {
         log.info("[RED -> FINANZAS] Solicitando cobro inmediato de {} Eddies a la Wallet del paciente ID: {}",
                 ventaGuardada.getPrecioCobrado(), ventaGuardada.getPacienteId());
 
-        // En este punto simulamos el éxito con un 'true' directo.
-        // Integración futura: estadoTransaccion = transaccionClient.procesarCobro( request... );
-        boolean estadoTransaccion = true;
+        // En este punto mandamos a crear la transaccion de cobro que devolvera true de ser exitosa y false en caso contrario
+        boolean estadoTransaccion = transaccionClient.procesarCobroEdgerunner(venta.getId(),venta.getPacienteId(),venta.getPrecioCobrado());
 
         // PASO E: Derivar el control del flujo al evaluador de estados local
         return procesarResultadoPago(ventaGuardada, estadoTransaccion);

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/billeteras")
+@RequestMapping("/api/v1/billeteras")
 @RequiredArgsConstructor
 public class BilleteraController {
     private final BilleteraService billeteraService;
@@ -47,7 +47,7 @@ public class BilleteraController {
     }
     // RESTAR SALDO A BILLETERA(EN EDDIES)
     @PutMapping("/{id}/restar")
-    public Billetera restarSaldo(
+    public Boolean restarSaldo(
             @PathVariable Long id,
             @RequestParam Double monto) {
         return billeteraService.restarSaldo(id, monto);

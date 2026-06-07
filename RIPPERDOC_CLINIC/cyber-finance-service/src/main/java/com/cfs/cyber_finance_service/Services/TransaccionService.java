@@ -18,52 +18,39 @@ public class TransaccionService {
     private final BilleteraService billeteraService;
 
     //CREAR TRANSACCION
-        @Transactional
-        public Transaccion crear (Transaccion transaccion){
-            return transaccionRepository.save(transaccion);
-        }
-    //OBTENER TODAS LAS TRANSACCIONES
-        @Transactional(readOnly = true)
-        public List<Transaccion> obtenerTodas(){
-                return transaccionRepository.findAll();
-        }
-    //OBTENER TRANSACCIONES POR BILLETERA
-        @Transactional(readOnly = true)
-        public List<Transaccion> obtenerPorBilletera(Long billeteraId){
-                return transaccionRepository.findByBilleteraId(billeteraId);
-        }
-    //VALIDAR Y PROCESAR TRANSACCIONES
     @Transactional
-    public boolean procesarTransaccion(Transaccion transaccion){
+    public boolean crear (Long idVenta, Long idPaciente, Double costoEddies){
 
-        Billetera billetera = billeteraService.obtenerPorId(
-                transaccion.getBilleteraId()
-        );
+        log.info("=== Procesando pago para Venta ID: {}, Paciente ID: {} ===", idVenta, idPaciente);
 
-        // VALIDAR SI EL MONTO EXCEDE EL SALDO
-        if(transaccion.getMonto() > billetera.getSaldoEddies()){
+        Billetera billetera = billeteraService.obtenerPorPacienteId(idPaciente);
 
-            transaccion.setEstado(false);
+        // 1. Intentamos hacer el cobro en la billetera
+        boolean cobroExitoso = billeteraService.restarSaldo(billetera.getId(), costoEddies);
 
-            transaccionRepository.save(transaccion);
-
-            log.warn("Monto a pagar excede saldo disponible");
-
-            return false;
-        }
-
-        // TRANSACCION APROBADA
-        transaccion.setEstado(true);
-
-        billeteraService.restarSaldo(
-                billetera.getId(),
-                transaccion.getMonto()
-        );
+        // 2. Preparamos la transacción para el histórico (Se guarda SÍ O SÍ)
+        Transaccion transaccion = new Transaccion();
+        transaccion.setBilleteraId(billetera.getId());
+        transaccion.setVentaId(idVenta);
+        transaccion.setMonto(costoEddies);
+        transaccion.setEstado(cobroExitoso); // Será true o false según el resultado del cobro
 
         transaccionRepository.save(transaccion);
+        log.info("Histórico registrado. Estado de la transacción {}: {}", transaccion.getId(), cobroExitoso);
 
-        log.info("Transaccion realizada correctamente");
+        // 3. Le respondemos a Ventas lo que quería saber
+        return cobroExitoso;
+    }
 
-        return true;
+    //OBTENER TODAS LAS TRANSACCIONES
+    @Transactional(readOnly = true)
+    public List<Transaccion> obtenerTodas(){
+        return transaccionRepository.findAll();
+    }
+
+    //OBTENER TRANSACCIONES POR BILLETERA
+    @Transactional(readOnly = true)
+    public List<Transaccion> obtenerPorBilletera(Long billeteraId){
+        return transaccionRepository.findByBilleteraId(billeteraId);
     }
 }
