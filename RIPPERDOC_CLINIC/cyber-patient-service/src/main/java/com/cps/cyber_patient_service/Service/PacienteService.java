@@ -3,6 +3,7 @@ package com.cps.cyber_patient_service.Service;
 import com.cps.cyber_patient_service.Model.Paciente;
 import com.cps.cyber_patient_service.Repository.PacienteRepository;
 import com.cps.cyber_patient_service.WebClient.BilleteraClient;
+import com.cps.cyber_patient_service.WebClient.MaxtacClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import java.util.List;
 public class PacienteService {
     private final PacienteRepository pacienteRepository;
     private final BilleteraClient billeteraClient;
+    private final MaxtacClient maxtacClient;
 
     // 1. OBTENER TODOS los pacientes
     @Transactional(readOnly = true)
@@ -76,7 +78,7 @@ public class PacienteService {
 
         // Verificacion del nivel de Cyberpsicosis
         if(NvlCyberpsico >= 100){
-            // Aqui se llama a maxtac (Comunicacion con su microservicio)
+            maxtacClient.dispararAlertaCyberpsicosis(pacienteActualizado.getId(),pacienteActualizado.getAlias());
         }
 
         return pacienteActualizado;
