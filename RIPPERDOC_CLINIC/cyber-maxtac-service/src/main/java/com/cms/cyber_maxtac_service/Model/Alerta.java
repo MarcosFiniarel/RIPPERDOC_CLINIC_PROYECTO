@@ -18,6 +18,9 @@ public class Alerta {
     @NotNull(message = "El ID del paciente objetivo es obligatorio")
     private Long pacienteId; // Referencia lógica al cyber-patient-service
 
+    @NotBlank(message = "El alias del cyberpsico no puede estar en blanco")
+    private String alias;
+
     @NotBlank(message = "El nivel de amenaza es obligatorio")
     private String nivelAmenaza = "CODIGO_NEGRO";
 
