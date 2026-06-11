@@ -1,0 +1,65 @@
+PARA PACIENTES
+
+{
+  "alias": "David Martinez",
+  "nivelCyberpsicosis": 0,
+  "altura": "ALTO",
+  "densidadOsea": "ALTA",
+  "densidadMuscular": "ALTA",
+  "peso": 85.5,
+  "edad": 18
+}
+
+{
+  "alias": "V",
+  "nivelCyberpsicosis": 15,
+  "altura": "MEDIO",
+  "densidadOsea": "MEDIA",
+  "densidadMuscular": "MEDIA",
+  "peso": 74.0,
+  "edad": 23
+}
+
+PARA CIBERWARE
+
+{
+  "nombre": "Sandevistan MK.IV",
+  "costoEddies": 35000.0,
+  "costoHumanidad": 22,
+  "stock": 5,
+  "alturaCompatibilidad": "ALTO",
+  "densidadOseaCompatibilidad": "ALTA",
+  "densidadMuscularCompatibilidad": "ALTA",
+  "pesoMinimoCompatibilidad": 80.0,
+  "pesoMaximoCompatibilidad": 100.0,
+  "edadMinimaCompatibilidad": 17,
+  "edadMaximaCompatibilidad": 25
+}
+
+{
+  "nombre": "Opticas Kiroshi Optishield v3",
+  "costoEddies": 18000.0,
+  "costoHumanidad": 10,
+  "stock": 8,
+  "alturaCompatibilidad": "MEDIO",
+  "densidadOseaCompatibilidad": "MEDIA",
+  "densidadMuscularCompatibilidad": "MEDIA",
+  "pesoMinimoCompatibilidad": 60.0,
+  "pesoMaximoCompatibilidad": 80.0,
+  "edadMinimaCompatibilidad": 21,
+  "edadMaximaCompatibilidad": 35
+}
+
+{
+  "nombre": "Arasaka Sandevistan MK.V - Prototype",
+  "costoEddies": 120000.0,
+  "costoHumanidad": 88,
+  "stock": 1,
+  "alturaCompatibilidad": "ALTO",
+  "densidadOseaCompatibilidad": "ALTA",
+  "densidadMuscularCompatibilidad": "ALTA",
+  "pesoMinimoCompatibilidad": 80.0,
+  "pesoMaximoCompatibilidad": 110.0,
+  "edadMinimaCompatibilidad": 17,
+  "edadMaximaCompatibilidad": 25
+}
