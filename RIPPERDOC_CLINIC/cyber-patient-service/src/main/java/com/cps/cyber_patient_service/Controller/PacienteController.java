@@ -4,6 +4,12 @@ import com.cps.cyber_patient_service.DTO.PacienteCompatibilidadDto;
 import com.cps.cyber_patient_service.DTO.PacienteContratoDto;
 import com.cps.cyber_patient_service.Model.Paciente;
 import com.cps.cyber_patient_service.Service.PacienteService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j; // Habilita el framework para hacer logs
 import org.springframework.http.HttpStatus;
@@ -17,6 +23,7 @@ import java.util.List;
 @RequestMapping("/api/v1/paciente")
 @RequiredArgsConstructor
 @Slf4j // Inyecta automáticamente el objeto 'log' de Lombok para auditoría y trazas en consola
+@Tag(name = "2. Registro de Pacientes", description = "Endpoints para el control biológico, seguimiento de cyberpsicosis y contratos de mercenarios")
 public class PacienteController {
     private final PacienteService pacienteService;
 
@@ -26,6 +33,8 @@ public class PacienteController {
      * Endpoint: http://localhost:8081/api/v1/paciente
      */
     @GetMapping
+    @Operation(summary = "Listar todos los pacientes", description = "Obtiene el padrón completo de sujetos registrados en la base de datos de la clínica clandestina.")
+    @ApiResponse(responseCode = "200", description = "Lista de pacientes enviada con éxito")
     public ResponseEntity<List<Paciente>> listarTodos() {
         log.info("=== Solicitud de listado de clientes recibida ===");
         List<Paciente> lista = pacienteService.obtenerTodos();
@@ -41,7 +50,12 @@ public class PacienteController {
      * Endpoint: http://localhost:8081/api/v1/paciente/{id}
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Paciente> buscarPorId(@PathVariable Long id) {
+    @Operation(summary = "Buscar paciente por ID", description = "Localiza la ficha biológica completa de un paciente usando su clave única de red.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Paciente localizado exitosamente"),
+            @ApiResponse(responseCode = "404", description = "Sujeto no encontrado en los registros de la clínica", content = @Content)
+    })
+    public ResponseEntity<Paciente> buscarPorId(@PathVariable @Parameter(description = "ID del paciente a consultar", example = "1") Long id) {
         log.info("Buscando paciente con ID: {}", id);
         Paciente paciente = pacienteService.obtenerPorId(id);
         log.info("Paciente encontrado: {}", paciente.getAlias());
@@ -54,6 +68,11 @@ public class PacienteController {
      * Endpoint: http://localhost:8081/api/v1/paciente
      */
     @PostMapping
+    @Operation(summary = "Registrar un nuevo paciente", description = "Crea un nuevo expediente médico en la base de datos evaluando sus métricas corporales iniciales.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "¡Paciente dado de alta en la matriz correctamente!"),
+            @ApiResponse(responseCode = "400", description = "Error de validación en los atributos del JSON enviado", content = @Content)
+    })
     public ResponseEntity<Paciente> crearPaciente(@Valid @RequestBody Paciente paciente) {
         log.info("Registrando nuevo paciente: {}", paciente.getAlias());
         Paciente guardado = pacienteService.guardar(paciente);
@@ -70,7 +89,12 @@ public class PacienteController {
      * Endpoint: http://localhost:8081/api/v1/paciente/{id}
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminarPaciente(@PathVariable Long id) {
+    @Operation(summary = "Eliminar paciente del registro", description = "Purga de forma permanente el expediente del paciente. Usado ante decesos en combate o alertas de MaxTac.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Expediente médico borrado del sistema sin dejar rastros"),
+            @ApiResponse(responseCode = "404", description = "No se pudo eliminar: El ID proporcionado no existe", content = @Content)
+    })
+    public ResponseEntity<Void> eliminarPaciente(@PathVariable @Parameter(description = "ID del paciente a dar de baja", example = "1") Long id) {
         // Usamos log.warn para alertar en consola que se está ejecutando una acción destructiva
         log.warn("ALERTA: Solicitud de eliminación del paciente con ID: {}", id);
         pacienteService.eliminar(id);
@@ -87,7 +111,14 @@ public class PacienteController {
      * Nota: Este endpoint está pensado para ser disparado internamente tras una instalacion y posterior registro de alteracion de humanidad.
      */
     @PatchMapping("/{id}/psico")
-    public ResponseEntity<Paciente> NvlCyberpsico(@PathVariable Long id, @RequestParam int modificador) {
+    @Operation(summary = "Modificar nivel de cyberpsicosis", description = "Actualiza de forma parcial el estado de degradación mental sumando el costo de un nuevo implante.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Índice de estabilidad mental actualizado con éxito"),
+            @ApiResponse(responseCode = "404", description = "Paciente no encontrado", content = @Content)
+    })
+    public ResponseEntity<Paciente> NvlCyberpsico(
+            @PathVariable @Parameter(description = "ID del paciente operado", example = "1") Long id,
+            @RequestParam @Parameter(description = "Puntos de humanidad a descontar de la psique del paciente", example = "88") int modificador) {
         log.info("Iniciando actualizacion de humanidad de ID: {}", id);
         Paciente actualizado = pacienteService.actualizacionCyberpsicosis(id, modificador);
         log.info("Nivel de Cyberpsicosis actualizado con éxito. Nivel actual para '{}': {}", actualizado.getAlias(), actualizado.getNivelCyberpsicosis());
@@ -101,7 +132,12 @@ public class PacienteController {
      * Retorna true si el paciente puede comprar y false si no
      */
     @GetMapping("/{id}/check")
-    public ResponseEntity<Boolean> checkPaciente(@PathVariable Long id) {
+    @Operation(summary = "Validar estado de aptitud del paciente", description = "Verifica si los niveles de cyberpsicosis del paciente le permiten seguir comprando más cromo de forma segura.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Chequeo de aptitud realizado con éxito"),
+            @ApiResponse(responseCode = "404", description = "ID de paciente no registrado", content = @Content)
+    })
+    public ResponseEntity<Boolean> checkPaciente(@PathVariable @Parameter(description = "ID del paciente a evaluar", example = "1") Long id) {
         log.info("Verificando paciente con ID: {}", id);
         boolean disponible = pacienteService.checkPaciente(id);
         log.info("Verificación completada. ¿Habilitado para comprar?: {}", disponible);
@@ -115,7 +151,12 @@ public class PacienteController {
      * Retorna un DTO optimizado (ID, ALIAS).
      */
     @GetMapping("/{id}/contrato")
-    public ResponseEntity<PacienteContratoDto> obtenerContratoParaVenta(@PathVariable Long id) {
+    @Operation(summary = "Emitir Contrato de Paciente (DTO)", description = "Genera un payload optimizado de red que expone de forma directa la identidad del comprador para el flujo de ventas.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Firma del contrato del paciente generada con éxito"),
+            @ApiResponse(responseCode = "404", description = "Paciente inexistente", content = @Content)
+    })
+    public ResponseEntity<PacienteContratoDto> obtenerContratoParaVenta(@PathVariable @Parameter(description = "ID del paciente involucrado en la transacción", example = "1") Long id) {
         log.info("Emitiendo Contrato Global para compra de ID: {}", id);
         Paciente paciente = pacienteService.obtenerPorId(id);
 
@@ -136,7 +177,12 @@ public class PacienteController {
      * Retorna un DTO optimizado (ALTURA, DENSIDAD OSEA, DENSIDAD MUSCULAR, PESO y EDAD).
      */
     @GetMapping("/{id}/compatibilidad")
-    public ResponseEntity<PacienteCompatibilidadDto> obtenerCompatibilidad(@PathVariable Long id) {
+    @Operation(summary = "Emitir Ficha de Compatibilidad del Paciente (DTO)", description = "Transmite de forma aislada las métricas físicas y óseas del sujeto para corroborar si resistirá un implante.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ficha antropométrica enviada correctamente"),
+            @ApiResponse(responseCode = "404", description = "Paciente no encontrado", content = @Content)
+    })
+    public ResponseEntity<PacienteCompatibilidadDto> obtenerCompatibilidad(@PathVariable @Parameter(description = "ID del paciente a analizar biometricamente", example = "1") Long id) {
         log.info("Emitiendo datos de compatibilidad de ID: {}", id);
         Paciente paciente = pacienteService.obtenerPorId(id);
 
