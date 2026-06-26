@@ -9,6 +9,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,20 +27,22 @@ public class BilleteraController {
     @PostMapping
     @Operation(summary = "Inicializar billetera de paciente", description = "Crea automáticamente una cuenta financiera en 0.0 Eddies vinculada a un paciente.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Billetera creada con éxito"),
+            @ApiResponse(responseCode = "201", description = "Billetera creada con éxito"),
             @ApiResponse(responseCode = "400", description = "El paciente ya cuenta con una billetera activa", content = @Content)
     })
-    public Billetera crear(@RequestParam @Parameter(description = "ID del paciente a asociar", example = "1") Long id) {
-        return billeteraService.crear(id);
+    public ResponseEntity<Billetera> crear(@RequestParam @Parameter(description = "ID del paciente a asociar", example = "1") Long id) {
+        Billetera nuevaBilletera = billeteraService.crear(id);
+        // Cambiado a HttpStatus.CREATED (201) por buenas prácticas de diseño en creación de recursos
+        return ResponseEntity.status(HttpStatus.CREATED).body(nuevaBilletera);
     }
-
 
     // OBTENER TODAS LAS BILLETERAS
     @GetMapping
     @Operation(summary = "Obtener todas las billeteras", description = "Muestra el registro completo de cuentas de la clínica.")
     @ApiResponse(responseCode = "200", description = "Listado de cuentas enviado")
-    public List<Billetera> obtenerTodas() {
-        return billeteraService.obtenerTodas();
+    public ResponseEntity<List<Billetera>> obtenerTodas() {
+        List<Billetera> lista = billeteraService.obtenerTodas();
+        return ResponseEntity.ok(lista);
     }
 
     // OBTENER BILLETERA POR ID
@@ -48,8 +52,9 @@ public class BilleteraController {
             @ApiResponse(responseCode = "200", description = "Billetera localizada"),
             @ApiResponse(responseCode = "404", description = "Billetera no registrada", content = @Content)
     })
-    public Billetera obtenerPorId(@PathVariable("id") @Parameter(description = "ID de la billetera", example = "1") Long id) {
-        return billeteraService.obtenerPorId(id);
+    public ResponseEntity<Billetera> obtenerPorId(@PathVariable("id") @Parameter(description = "ID de la billetera", example = "1") Long id) {
+        Billetera billetera = billeteraService.obtenerPorId(id);
+        return ResponseEntity.ok(billetera);
     }
 
     // OBTENER BILLETERA POR ID DE PACIENTE
@@ -59,8 +64,9 @@ public class BilleteraController {
             @ApiResponse(responseCode = "200", description = "Billetera del paciente localizada"),
             @ApiResponse(responseCode = "404", description = "El paciente no posee una cuenta registrada", content = @Content)
     })
-    public Billetera obtenerPorPacienteId(@PathVariable("pacienteId") @Parameter(description = "ID del paciente", example = "1") Long pacienteId) {
-        return billeteraService.obtenerPorPacienteId(pacienteId);
+    public ResponseEntity<Billetera> obtenerPorPacienteId(@PathVariable("pacienteId") @Parameter(description = "ID del paciente", example = "1") Long pacienteId) {
+        Billetera billetera = billeteraService.obtenerPorPacienteId(pacienteId);
+        return ResponseEntity.ok(billetera);
     }
 
     // SUMAR SALDO A BILLETERA (EN EDDIES)
@@ -70,36 +76,37 @@ public class BilleteraController {
             @ApiResponse(responseCode = "200", description = "Abono procesado, saldo actualizado"),
             @ApiResponse(responseCode = "404", description = "Billetera inexistente", content = @Content)
     })
-    public Billetera sumarSaldo(
+    public ResponseEntity<Billetera> sumarSaldo(
             @PathVariable @Parameter(description = "ID de la billetera a abonar", example = "1") Long id,
             @RequestParam @Parameter(description = "Monto en Eddies a depositar", example = "50000.0") Double monto) {
-        return billeteraService.sumarSaldo(id, monto);
+        Billetera billeteraActualizada = billeteraService.sumarSaldo(id, monto);
+        return ResponseEntity.ok(billeteraActualizada);
     }
-    // RESTAR SALDO A BILLETERA(EN EDDIES)
+
+    // RESTAR SALDO A BILLETERA (EN EDDIES)
     @PutMapping("/{id}/restar")
     @Operation(summary = "Cobrar fondos (Deducir Eddies)", description = "Resta dinero de la cuenta tras una compra. Retorna true si la operación es exitosa y false si no hay fondos suficientes.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Evaluación de transacción completada"),
             @ApiResponse(responseCode = "404", description = "Billetera no encontrada", content = @Content)
     })
-    public Boolean restarSaldo(
+    public ResponseEntity<Boolean> restarSaldo(
             @PathVariable @Parameter(description = "ID de la billetera a cobrar", example = "1") Long id,
             @RequestParam @Parameter(description = "Monto en Eddies a debitar", example = "120000.0") Double monto) {
-        return billeteraService.restarSaldo(id, monto);
+        Boolean resultadoTransaccion = billeteraService.restarSaldo(id, monto);
+        return ResponseEntity.ok(resultadoTransaccion);
     }
 
     // ELIMINAR BILLETERA
     @DeleteMapping("/{id}")
     @Operation(summary = "Cerrar cuenta financiera", description = "Elimina permanentemente el registro de la billetera del sistema.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Billetera eliminada correctamente"),
+            @ApiResponse(responseCode = "204", description = "Billetera eliminada correctamente del sistema sin dejar rastro"),
             @ApiResponse(responseCode = "404", description = "Cuenta no existente", content = @Content)
     })
-    public String eliminar(@PathVariable @Parameter(description = "ID de la billetera a dar de baja", example = "1") Long id) {
-
+    public ResponseEntity<Void> eliminar(@PathVariable @Parameter(description = "ID de la billetera a dar de baja", example = "1") Long id) {
         billeteraService.eliminar(id);
-
-        return "Billetera eliminada correctamente";
+        // Modificado a 204 No Content para mantener la estricta consistencia con el diseño de tus otros microservicios
+        return ResponseEntity.noContent().build();
     }
 }
-
