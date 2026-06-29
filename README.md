@@ -30,6 +30,12 @@ Cada módulo funciona como una entidad aislada que emula restricciones de llaves
 7. cyber-maxtac-service (Alertas de Seguridad): El protocolo de emergencia. Monitorea brotes psicóticos para desplegar las fuerzas de choque si un paciente se sale de control tras una instalación de cromo.
 
 ---
+## NOTA IMPORTANTE
+Debido al peso de los archivos target de cada microservicio para porder obtener los snapshot y  asi ejecutarlos via docker, github no permite cargarlos por lo cual se deja el enlace a google drive donde estara un archivo comprimido descargable que contendrá los archivos target correspondientes a cada microservicio al igual que el archivo .mvn que omite github por si se desea obtener el snapshot al momento de ejecutar el codigo en lugar de utilizar los ya existentes que corresponden con esta version.
+
+https://drive.google.com/file/d/1N-zyzOFZTazB28qzx-GyxPZBX-M9_f8d/view?usp=sharing
+
+---
 
 ## Stack Tecnológico
 * **Java 21** & **Spring Boot**
